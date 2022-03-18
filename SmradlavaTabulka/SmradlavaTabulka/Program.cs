@@ -20,20 +20,28 @@ static void smrad(string jmeno)
     }
     prumer = (double) suma / delka;
     prumer = Math.Round(prumer);
+    Console.Write($"{jmeno}\t");
     if (prumer % 7 == 0)
     {
-        Console.WriteLine($"{jmeno}\tsmrdí jako bolavá noha bezdomovce");
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("smrdí jako bolavá noha bezdomovce");
+
     }
     else if (prumer % 5 == 0)
     {
-        Console.WriteLine($"{jmeno}\tsmrdí jako koňská řiť");
+        Console.ForegroundColor = ConsoleColor.DarkYellow;
+        Console.WriteLine("smrdí jako koňská řiť");
     }
     else if (prumer % 3 == 0)
     {
-        Console.WriteLine($"{jmeno}\tsmrdí jako cibuláči");
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("smrdí jako cibuláči");
     }
     else
     {
-        Console.WriteLine($"{jmeno}\tnesmrdí dost");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("nesmrdí dost");
     }
+
+    Console.ForegroundColor = ConsoleColor.Gray;
 }
