@@ -7,9 +7,6 @@ smrad("Mirek Přeček");
 smrad("Matěj Bartusek");
 smrad("Ondřej Valenta");
 
-
-
-
 static void smrad(string jmeno)
 {
     int suma = 0, delka = jmeno.Length;
@@ -21,7 +18,7 @@ static void smrad(string jmeno)
     prumer = (double) suma / delka;
     prumer = Math.Round(prumer);
     Console.Write($"{jmeno}\t");
-    if (prumer % 7 == 0||jmeno=="Honza Rada"||jmeno=="Jan Rada")
+    if (prumer % 7 == 0||jmeno.ToUpper()=="HONZA RADA"||jmeno.ToUpper()=="JAN RADA"||jmeno.ToUpper()=="JANUS RADUS"||jmeno.ToUpper()=="HONZUS RADUS"||jmeno.ToUpper()=="ZELVAMAN"||jmeno.ToUpper()=="ŽELVAMAN"||jmeno.ToUpper()=="ZELVA MAN"||jmeno.ToUpper()=="ŽELVA MAN")
     {
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("smrdí jako bolavá noha bezdomovce");
