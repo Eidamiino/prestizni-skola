@@ -21,7 +21,7 @@ static void smrad(string jmeno)
     prumer = (double) suma / delka;
     prumer = Math.Round(prumer);
     Console.Write($"{jmeno}\t");
-    if (prumer % 7 == 0)
+    if (prumer % 7 == 0||jmeno=="Honza Rada"||jmeno=="Jan Rada")
     {
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("smrdí jako bolavá noha bezdomovce");
