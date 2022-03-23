@@ -8,17 +8,15 @@ namespace PalApp
     {
         static void Main(string[] args)
         {
+            //enum SmellLevel { None, OnionRinger, HorseAss, HobosLeg }
             Dictionary<string, string> nameDictionary = new Dictionary<string, string>();
-            int i, sum = 0;
-            string name, smellLevel;
-            double avg;
-
             uploadTable(nameDictionary);
 
             while (true)
             {
-                sum = 0;
-                name = getName();
+                var sum = 0;
+
+                var name = getName();
 
                 if (maybeExit(name)) return;
 
@@ -26,9 +24,9 @@ namespace PalApp
 
                 sum = getSum(name, sum);
 
-                avg = getAvg(sum, name);
+                var avg = getAvg(sum, name);
 
-                smellLevel = getSmellLevel(avg, name);
+                var smellLevel = getSmellLevel(avg, name);
 
                 nameDictionary.Add(name, smellLevel);
 
@@ -41,9 +39,9 @@ namespace PalApp
 
         private static void uploadTable(Dictionary<string, string> nameDictionary)
         {
-            if (File.Exists("C://tmp/SmellyBoys.txt"))
+            if (File.Exists( Constants.PathToFile))
             {
-                var lines = File.ReadAllLines("C://tmp/SmellyBoys.txt");
+                var lines = File.ReadAllLines( Constants.PathToFile);
                 foreach (var line in lines)
                 {
                     if (line.Length == 0)
@@ -65,7 +63,7 @@ namespace PalApp
             {
                 foreach (KeyValuePair<string, string> ele in nameDictionary)
                 {
-                    File.AppendAllText("C://tmp/SmellyBoys.txt", $"{ele.Key},{ele.Value}\n");
+                    File.AppendAllText( Constants.PathToFile, $"{ele.Key},{ele.Value}\n");
                 }
 
                 Console.Write("Table updated successfully");
