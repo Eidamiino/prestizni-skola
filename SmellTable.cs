@@ -2,42 +2,49 @@
 using System.Collections.Generic;
 using System.IO;
 
+
 namespace PalApp
 {
     internal class Program
     {
+        enum SmellType {Unsmeller,OnionRinger,HorseAss,HobosFeet}
+        static Dictionary<string, SmellType> nameDictionary = new Dictionary<string, SmellType>();
+
         static void Main(string[] args)
         {
-            //enum SmellLevel { None, OnionRinger, HorseAss, HobosLeg }
-            Dictionary<string, string> nameDictionary = new Dictionary<string, string>();
-            uploadTable(nameDictionary);
+            
+            loadFromFile(nameDictionary);
 
             while (true)
             {
                 var sum = 0;
-
                 var name = getName();
 
-                if (maybeExit(name)) return;
-
+                if (maybeExit(name)) Environment.Exit(0);
                 if (maybeSave(name, nameDictionary)) continue;
+                if(isDuplicate(name)) continue;
 
-                sum = getSum(name, sum);
+                sum = calculateSum(name, sum);
+                var avg = calculateAvg(sum, name);
 
-                var avg = getAvg(sum, name);
-
-                var smellLevel = getSmellLevel(avg, name);
-
+                SmellType smellLevel= calculateSmellLevel(avg, name); ;
                 nameDictionary.Add(name, smellLevel);
 
                 printTable(nameDictionary);
-
-
             }
-
         }
 
-        private static void uploadTable(Dictionary<string, string> nameDictionary)
+        private static bool isDuplicate(string name)
+        {
+            if (nameDictionary.ContainsKey(name))
+            {
+                Console.WriteLine("\nThis name has already been entered");
+                return true;
+            }
+            return false;
+        }
+
+        private static void loadFromFile(Dictionary<string, SmellType> nameDictionary)
         {
             if (File.Exists( Constants.PathToFile))
             {
@@ -45,25 +52,37 @@ namespace PalApp
                 foreach (var line in lines)
                 {
                     if (line.Length == 0)
-                    {
                         break;
-                    }
 
-                    int dividerPos = line.IndexOf(',');
-                    string fileName = line.Substring(0, dividerPos);
-                    string fileSmellLevel = line.Substring(dividerPos + 1);
+                    string fileName = line.Split(Constants.Divider)[0];
+                    SmellType fileSmellLevel = (SmellType)Convert.ToInt32(line.Split(Constants.Divider)[1]);
                     nameDictionary.Add(fileName, fileSmellLevel);
                 }
             }
         }
+        private static string getName()
+        {
+            string name;
+            Console.WriteLine("Input a name:");
+            name = Console.ReadLine();
+            return name;
+        }
+        private static bool maybeExit(string name)
+        {
+            if (name == Constants.ExitKeyword)
+                return true;
 
-        private static bool maybeSave(string name, Dictionary<string, string> nameDictionary)
+            return false;
+        }
+
+        private static bool maybeSave(string name, Dictionary<string, SmellType> nameDictionary)
         {
             if (name == Constants.SaveKeyword)
             {
-                foreach (KeyValuePair<string, string> ele in nameDictionary)
+                File.WriteAllText(Constants.PathToFile, "");
+                foreach (KeyValuePair<string, SmellType> ele in nameDictionary)
                 {
-                    File.AppendAllText( Constants.PathToFile, $"{ele.Key},{ele.Value}\n");
+                    File.AppendAllText(Constants.PathToFile, $"{ele.Key},{(int) ele.Value}\n");
                 }
 
                 Console.Write("Table updated successfully");
@@ -73,95 +92,68 @@ namespace PalApp
             return false;
         }
 
-        private static bool maybeExit(string name)
+        private static int calculateSum(string name, int sum)
         {
-            if (name == Constants.ExitKeyword)
+            for (int i = 0; i < name.Length; i++)
             {
-                return true;
+                if (name[i] == ' ')
+                    continue;
+                sum += name[i];
             }
-
-            return false;
+            return sum;
         }
+        private static double calculateAvg(int sum, string name)
+        {
+            double avg;
+            avg = (double)sum / name.Length;
+            avg = Math.Round(avg);
+            return avg;
+        }
+        private static SmellType calculateSmellLevel(double avg, string name)
+        {
+            if (avg % 7 == 0 || name.ToUpper() == "HONZA RADA" || name.ToUpper() == "JAN RADA")
+            {
+                return SmellType.HobosFeet;
+            }
+            if (avg % 5 == 0)
+            {
+                return SmellType.HorseAss;
+            }
+            if (avg % 3 == 0)
+            {
+                return SmellType.OnionRinger;
+            }
+            return SmellType.Unsmeller;
 
-        private static void printTable(Dictionary<string, string> nameDictionary)
+        }
+        private static void printTable(Dictionary<string, SmellType> nameDictionary)
         {
             Console.WriteLine("\nThe Smell Table: \n*************************");
-            foreach (KeyValuePair<string, string> ele in nameDictionary)
+            foreach (KeyValuePair<string, SmellType> ele in nameDictionary)
             {
                 Console.Write($"{ele.Key}\t");
                 switch (ele.Value)
                 {
-                    case Constants.HobosFeet:
+                    case SmellType.HobosFeet:
                         Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(Constants.HobosFeet);
                         break;
-                    case Constants.HorseAss:
+                    case SmellType.HorseAss:
                         Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine(Constants.HorseAss);
                         break;
-                    case Constants.OnionRinger:
+                    case SmellType.OnionRinger:
                         Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine(Constants.OnionRinger);
                         break;
-                    case Constants.Unsmeller:
+                    case SmellType.Unsmeller:
                         Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine(Constants.Unsmeller);
                         break;
                 }
-
-                Console.WriteLine(ele.Value);
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
-        }
-
-        private static double getAvg(int sum, string name)
-        {
-            double avg;
-            avg = (double) sum / name.Length;
-            avg = Math.Round(avg);
-            return avg;
-        }
-
-        private static int getSum(string name, int sum)
-        {
-            int i;
-            for (i = 0; i < name.Length; i++)
-            {
-                if (name[i] == ' ')
-                {
-                    continue;
-                }
-                sum += name[i];
-            }
-
-            return sum;
-        }
-
-        private static string getName()
-        {
-            string name;
-            Console.WriteLine("\nInput a name:");
-            name = Console.ReadLine();
-            return name;
-        }
-
-        private static string getSmellLevel(double avg, string name)
-        {
-            string smellLevel;
-            if (avg % 7 == 0 || name.ToUpper() == "HONZA RADA" || name.ToUpper()== "JAN RADA")
-            {
-                smellLevel = Constants.HobosFeet;
-            }
-            else if (avg % 5 == 0)
-            {
-                smellLevel = Constants.HorseAss;
-            }
-            else if (avg % 3 == 0)
-            {
-                smellLevel = Constants.OnionRinger;
-            }
-            else
-            {
-                smellLevel = Constants.Unsmeller;
-            }
-
-            return smellLevel;
+            Console.WriteLine("\n");
         }
     }
 }

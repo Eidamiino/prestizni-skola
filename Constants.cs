@@ -9,6 +9,7 @@
 
         public const string ExitKeyword = "exit";
         public const string SaveKeyword = "save";
+        public const string Divider = ",";
 
         public const string PathToFile = "C://tmp/SmellyBoys.txt";
     }
