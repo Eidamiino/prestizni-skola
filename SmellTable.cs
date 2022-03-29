@@ -12,11 +12,8 @@ namespace PalApp
 
         static void Main(string[] args)
         {
-            
             loadFromFile(nameDictionary);
-
-            while (true)
-            {
+            while (true) {
                 var sum = 0;
                 var name = getName();
 
@@ -36,8 +33,7 @@ namespace PalApp
 
         private static bool isDuplicate(string name)
         {
-            if (nameDictionary.ContainsKey(name))
-            {
+            if (nameDictionary.ContainsKey(name)) {
                 Console.WriteLine("\nThis name has already been entered");
                 return true;
             }
@@ -46,14 +42,11 @@ namespace PalApp
 
         private static void loadFromFile(Dictionary<string, SmellType> nameDictionary)
         {
-            if (File.Exists( Constants.PathToFile))
-            {
+            if (File.Exists( Constants.PathToFile)) {
                 var lines = File.ReadAllLines( Constants.PathToFile);
-                foreach (var line in lines)
-                {
+                foreach (var line in lines) {
                     if (line.Length == 0)
                         break;
-
                     string fileName = line.Split(Constants.Divider)[0];
                     SmellType fileSmellLevel = (SmellType)Convert.ToInt32(line.Split(Constants.Divider)[1]);
                     nameDictionary.Add(fileName, fileSmellLevel);
@@ -71,7 +64,6 @@ namespace PalApp
         {
             if (name == Constants.ExitKeyword)
                 return true;
-
             return false;
         }
 
@@ -84,11 +76,9 @@ namespace PalApp
                 {
                     File.AppendAllText(Constants.PathToFile, $"{ele.Key},{(int) ele.Value}\n");
                 }
-
                 Console.Write("Table updated successfully");
                 return true;
             }
-
             return false;
         }
 
@@ -112,23 +102,19 @@ namespace PalApp
         private static SmellType calculateSmellLevel(double avg, string name)
         {
             if (avg % 7 == 0 || name.ToUpper() == "HONZA RADA" || name.ToUpper() == "JAN RADA")
-            {
                 return SmellType.HobosFeet;
-            }
+            
             if (avg % 5 == 0)
-            {
                 return SmellType.HorseAss;
-            }
+            
             if (avg % 3 == 0)
-            {
                 return SmellType.OnionRinger;
-            }
+            
             return SmellType.Unsmeller;
-
         }
         private static void printTable(Dictionary<string, SmellType> nameDictionary)
         {
-            Console.WriteLine("\nThe Smell Table: \n*************************");
+            Console.WriteLine($"\nThe Smell Table: \nExit:{Constants.ExitKeyword}\tSave:{Constants.SaveKeyword}\n*************************");
             foreach (KeyValuePair<string, SmellType> ele in nameDictionary)
             {
                 Console.Write($"{ele.Key}\t");
