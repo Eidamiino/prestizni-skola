@@ -1,0 +1,105 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Runtime.InteropServices.ComTypes;
+
+namespace Zipper3000
+{
+	internal class Program
+	{
+		// TEXT FILE: https://www.gutenberg.org/cache/epub/67766/pg67766.txt
+		// MP4 FILE: https://jsoncompare.org/LearningContainer/SampleFiles/Video/MP4/sample-mp4-file.mp4
+
+		/*
+		 * Compress each of the file in each of the CompressionLevel 10 times and measure how long it takes to compress it
+		 * Run all tests in a row, collect results and then print all results in a table, use escape characters to make it nice
+		 * Use functions, try not to have one big pile of code, follow the principles you have already learn 
+		 */
+		static Dictionary<CompressionLevel, long> compressionTimes = new Dictionary<CompressionLevel, long>();
+		static void Main(string[] args)
+		{
+			GetSum();
+			PrintTable();
+		}
+
+		private static long GetAvg(long sum)
+		{
+			return sum/10;
+		}
+
+		private static void GetSum()
+		{
+			using (FileStream zipToOpen = new FileStream(@"c:\tmp\release.zip", FileMode.Open))
+			{
+				using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+				{
+					long sum = 0;
+					for (int i = 0; i < 3; i++)
+					{
+						for (int j = 0; j < 10; j++)
+						{
+							var stopwatch = Stopwatch.StartNew();
+							OpenZip(i, archive);
+							stopwatch.Stop();
+							var timeToZip = stopwatch.ElapsedMilliseconds;
+							sum += timeToZip;
+						}
+						var avg = GetAvg(sum);
+						compressionTimes.Add(GetLevel(i), avg);
+						Console.WriteLine("hroch");
+						SaveToFile();
+					}
+				}
+			}
+		}
+
+		private static void OpenZip(int i, ZipArchive archive)
+		{
+			
+					archive.CreateEntryFromFile("c:\\tmp\\sample-mp4-file.mp4", "video.mp4", GetLevel(i));
+					archive.CreateEntryFromFile("c:\\tmp\\kniha.txt", "text.txt", GetLevel(i));
+			// using (StreamWriter writer = new StreamWriter(readmeEntry.Open()))
+			// {
+			// 	writer.WriteLine("Information about this package.");
+			// 	writer.WriteLine("========================");
+			// }
+
+		}
+		private static void SaveToFile()
+		{
+			foreach (KeyValuePair<CompressionLevel, long> time in compressionTimes)
+			{
+				File.WriteAllText("c:\\tmp\\Readme.txt",$"{time.Key},{time.Value}\n");
+			}
+		}
+		private static CompressionLevel GetLevel(int counter)
+		{
+			switch (counter)
+			{
+				case 1:
+				{
+					return CompressionLevel.Fastest;
+				}
+				case 2:
+				{
+					return CompressionLevel.Optimal;
+				}
+				default:
+				{
+					return CompressionLevel.NoCompression;
+				}
+			}
+		}
+
+		private static void PrintTable()
+		{
+			Console.WriteLine("Compression Times\n*********************");
+			foreach (KeyValuePair<CompressionLevel, long> time in compressionTimes)
+			{
+				Console.WriteLine($"{time.Key}\t{time.Value}ms");
+			}
+		}
+	}
+}
