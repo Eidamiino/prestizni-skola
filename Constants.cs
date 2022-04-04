@@ -12,5 +12,8 @@
         public const string Divider = ",";
 
         public const string PathToFile = "C://tmp/SmellyBoys.txt";
+
+        public const string Atribute1 = "name";
+        public const string Atribute2 = "smellLevel";
     }
 }
