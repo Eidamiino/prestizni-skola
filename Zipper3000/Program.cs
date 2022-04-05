@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices.ComTypes;
+using Ionic.Zip;
 
 namespace Zipper3000
 {
@@ -18,60 +19,56 @@ namespace Zipper3000
 		 * Use functions, try not to have one big pile of code, follow the principles you have already learn 
 		 */
 		static Dictionary<CompressionLevel, long> compressionTimes = new Dictionary<CompressionLevel, long>();
+
 		static void Main(string[] args)
 		{
 			GetSum();
 			PrintTable();
+			SaveToFile();
+			File.Delete(Constant.PathToZip);
 		}
 
 		private static long GetAvg(long sum)
 		{
-			return sum/10;
+			return sum / 10;
 		}
 
 		private static void GetSum()
 		{
-			using (FileStream zipToOpen = new FileStream(@"c:\tmp\release.zip", FileMode.Open))
-			{
-				using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
-				{
+			 using (FileStream zipToOpen = new FileStream(Constant.PathToZip, FileMode.Create))
+			 {
+			 	using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+			 	{
 					long sum = 0;
-					for (int i = 0; i < 3; i++)
-					{
-						for (int j = 0; j < 10; j++)
+			 		for (int i = 0; i < 3; i++)
+			 		{
+			 			for (int j = 0; j < 10; j++)
 						{
 							var stopwatch = Stopwatch.StartNew();
 							OpenZip(i, archive);
 							stopwatch.Stop();
 							var timeToZip = stopwatch.ElapsedMilliseconds;
 							sum += timeToZip;
-						}
+				    }
 						var avg = GetAvg(sum);
 						compressionTimes.Add(GetLevel(i), avg);
 						Console.WriteLine("hroch");
-						SaveToFile();
-					}
-				}
-			}
+				  }
+			  }
+			 }
 		}
+
 
 		private static void OpenZip(int i, ZipArchive archive)
 		{
-			
-					archive.CreateEntryFromFile("c:\\tmp\\sample-mp4-file.mp4", "video.mp4", GetLevel(i));
-					archive.CreateEntryFromFile("c:\\tmp\\kniha.txt", "text.txt", GetLevel(i));
-			// using (StreamWriter writer = new StreamWriter(readmeEntry.Open()))
-			// {
-			// 	writer.WriteLine("Information about this package.");
-			// 	writer.WriteLine("========================");
-			// }
-
+			archive.CreateEntryFromFile(Constant.PathToVideo, Constant.VideoName, GetLevel(i));
+					archive.CreateEntryFromFile(Constant.PathToText, Constant.TextName, GetLevel(i));
 		}
 		private static void SaveToFile()
 		{
 			foreach (KeyValuePair<CompressionLevel, long> time in compressionTimes)
 			{
-				File.WriteAllText("c:\\tmp\\Readme.txt",$"{time.Key},{time.Value}\n");
+				File.WriteAllText(Constant.PathToTable,$"{time.Key},{time.Value}\n");
 			}
 		}
 		private static CompressionLevel GetLevel(int counter)
