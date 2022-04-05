@@ -62,13 +62,13 @@ namespace Zipper3000
 		private static void OpenZip(int i, ZipArchive archive)
 		{
 			archive.CreateEntryFromFile(Constant.PathToVideo, Constant.VideoName, GetLevel(i));
-					archive.CreateEntryFromFile(Constant.PathToText, Constant.TextName, GetLevel(i));
+			archive.CreateEntryFromFile(Constant.PathToText, Constant.TextName, GetLevel(i));
 		}
 		private static void SaveToFile()
 		{
 			foreach (KeyValuePair<CompressionLevel, long> time in compressionTimes)
 			{
-				File.WriteAllText(Constant.PathToTable,$"{time.Key},{time.Value}\n");
+				File.AppendAllText(Constant.PathToTable,$"{time.Key},{time.Value}\n");
 			}
 		}
 		private static CompressionLevel GetLevel(int counter)
